@@ -36,3 +36,30 @@
     transform: rotate(360deg);
   }
 }
+
+
+/**
+ * FilePond Custom Styles
+ */
+.filepond--drop-label {
+	color: #4c4e53 !important;
+}
+
+.filepond--label-action {
+	text-decoration-color: #babdc0 !important;
+}
+
+.filepond--panel-root {
+	border-radius: 2em !important;
+	background-color: #edf0f4 !important;
+	height: 1em !important;
+}
+
+.filepond--item-panel {
+	background-color: #595e68 !important;
+}
+
+.filepond--drip-blob {
+	background-color: #7f8a9a !important;
+}
+

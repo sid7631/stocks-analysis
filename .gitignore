@@ -5,6 +5,10 @@ __pycache__/
 .env
 .venv
 *.DS_store
+/flask_session/
+/data/
+/jupyter_files/
+.vscode/
 
 #react ignores
 
