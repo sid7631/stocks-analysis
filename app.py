@@ -6,6 +6,7 @@ import time
 from werkzeug.utils import secure_filename
 from flask_session import Session
 from pathlib import Path
+import datetime
 
 from utils import tax_stocks
 
@@ -82,13 +83,31 @@ def upload():
             session["tax_filename"] = filename
 
             data = tax_stocks(os.path.join(session.get('userpath'),session.get('tax_filename')))
+            # data = tax_stocks('./data/sid/2021Q1.csv')
             
-            # return jsonify([{"Description":"Short Term Capital Gain (STT paid)","label":"loss","Profit\/Loss(-)":189838.69},{"Description":"Short Term Capital Gain (STT paid)","label":"profit","Profit\/Loss(-)":271110.5},{"Description":"Speculation Income (STT paid)","label":"loss","Profit\/Loss(-)":98426.22},{"Description":"Speculation Income (STT paid)","label":"profit","Profit\/Loss(-)":138592.35}])
+            # return jsonify([{"category":"Short Term Capital Gain (STT paid)","label":"loss","pnl":189838.69},{"category":"Short Term Capital Gain (STT paid)","label":"profit","pnl":271110.5},{"category":"Speculation Income (STT paid)","label":"loss","pnl":98426.22},{"category":"Speculation Income (STT paid)","label":"profit","pnl":138592.35}])
 
             return data
 
         else:
             return 'file extension not allowed'
+
+@app.route('/api/tax/filter', methods=['POST','GET'])
+@cross_origin()
+def tax_filter():
+    if request.method == 'GET':
+        # print(request.args.get('from'))
+        # print(request.args.get('to'))
+        from_date = request.args.get('from')
+        to_date = request.args.get('to')
+
+        print(to_date,from_date)
+        data = tax_stocks(os.path.join(session.get('userpath'),session.get('tax_filename')),to_date,from_date)
+        # data = tax_stocks('./data/sid/2021Q1.csv',to_date,from_date)
+
+        # print(datetime.datetime.strptime(from_date,'%d-%m-%Y').date())
+        # return jsonify([{"category":"Short Term Capital Gain (STT paid)","label":"loss","pnl":8838.69},{"category":"Short Term Capital Gain (STT paid)","label":"profit","pnl":2110.5},{"category":"Speculation Income (STT paid)","label":"loss","pnl":8426.22},{"category":"Speculation Income (STT paid)","label":"profit","pnl":38592.35}])
+        return data
 
 
 @app.route('/stocks_analysis/', defaults={'path': ''})

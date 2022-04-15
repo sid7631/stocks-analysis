@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime
+import json
 
 def tax_stocks(file_path,start_date=None,end_date=None):
     icici_tax_statement_mapping = {
@@ -26,10 +27,12 @@ def tax_stocks(file_path,start_date=None,end_date=None):
         df[column] = df[column].apply(lambda x: x.replace('-','').replace(',',''))
         df[column] = pd.to_numeric(df[column])
     if start_date and end_date:
-        x = datetime.datetime.strptime('2020-10-13','%Y-%m-%d').date()
-        y = datetime.datetime.strptime('2023-01-24','%Y-%m-%d').date()
+        x = datetime.datetime.strptime(start_date,'%d-%m-%Y').date()
+        y = datetime.datetime.strptime(end_date,'%d-%m-%Y').date()
         df_date_filtered = df[(df['sale_date']>=x) & (df['sale_date']<=y)]
     else:
         df_date_filtered = df
+        start_date = df['sale_date'].min()
+        end_date = df['sale_date'].max()
     df_result = pd.DataFrame(df_date_filtered.groupby(['category','label'])['pnl'].sum().reset_index())
-    return df_result.to_json(orient='records')
+    return {'records':json.loads(df_result.to_json(orient='records')), 'from':start_date, 'to':end_date}

@@ -70,7 +70,7 @@ const Header = (props) => {
                         component="div"
                         sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
                     >
-                        LOGO
+                        Personal Finance
                     </Typography>
                     <Typography
                         variant="h6"
@@ -78,7 +78,7 @@ const Header = (props) => {
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
                     >
-                        LOGO
+                        Personal Finance
                     </Typography>
                    
                    
