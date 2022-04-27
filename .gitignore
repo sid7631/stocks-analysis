@@ -13,23 +13,23 @@ __pycache__/
 #react ignores
 
 # dependencies
-/client/node_modules
-/client/*.pnp
+/app/client/node_modules
+/app/client/*.pnp
 .pnp.js
 
 # testing
-/client/coverage
+/app/client/coverage
 
 # production
-/build
+/app/client/build
 
 # misc
-/client/.DS_Store
-/client/.env.local
-/client/.env.development.local
-/client/.env.test.local
-/client/.env.production.local
+/app/client/.DS_Store
+/app/client/.env.local
+/app/client/.env.development.local
+/app/client/.env.test.local
+/app/client/.env.production.local
 
-/client/npm-debug.log*
-/client/yarn-debug.log*
-/client/yarn-error.log*
+/app/client/npm-debug.log*
+/app/client/yarn-debug.log*
+/app/client/yarn-error.log*

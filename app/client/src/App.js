@@ -32,7 +32,7 @@ function App() {
   const classes = useStyles()
   return (
     <ThemeProvider theme={theme}>
-      <Router basename='stocks_analysis'>
+      <Router basename='portfolio'>
       <Box >
         <CssBaseline />
         <Header />
