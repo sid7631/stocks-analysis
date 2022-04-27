@@ -1,13 +1,14 @@
 import pandas as pd
 import datetime
 import json
+from pathlib import Path
 
 def tax_stocks(file_path,start_date=None,end_date=None):
     icici_tax_statement_mapping = {
         'column_names':{'Description':'category','Stock Symbol':'symbol','Quantity':'quantity','Sale Date':'sale_date','Sale Rate':'sale_rate','Sale Value':'sale_value','Purchase Date':'purchase_date','Purchase Rate':'purchase_rate','Purchase Value':'purchase_value','Profit/Loss(-)':'pnl'}
     }
     sheet_mapping = icici_tax_statement_mapping
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path, skiprows=2)
     #interpolate first column with nearest value
     df.iloc[:,0] = df.iloc[:,0].ffill()
     #drop any column with nan
@@ -15,8 +16,8 @@ def tax_stocks(file_path,start_date=None,end_date=None):
     #reset index
     df.reset_index(drop=True,inplace=True)
     #make first row column and remove the first row
-    df.columns = df.iloc[0]
-    df = df[1:]
+    # df.columns = df.iloc[0]
+    # df = df[1:]
     #rename columns based on mapping
     df.columns = df.columns.to_series().map(sheet_mapping['column_names'])
 
@@ -36,3 +37,7 @@ def tax_stocks(file_path,start_date=None,end_date=None):
         end_date = df['sale_date'].max()
     df_result = pd.DataFrame(df_date_filtered.groupby(['category','label'])['pnl'].sum().reset_index())
     return {'records':json.loads(df_result.to_json(orient='records')), 'from':start_date, 'to':end_date}
+
+
+def create_folder(path):
+    Path(path).mkdir(parents=True, exist_ok=True)

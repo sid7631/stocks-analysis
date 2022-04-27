@@ -19,6 +19,8 @@ from app.auth.models import User
 
 from flask import current_app as app, send_from_directory
 
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 api = Blueprint('api', __name__, url_prefix='/api')
 
@@ -32,6 +34,7 @@ def allowed_file(filename):
 # Set the route and accepted methods
 @api.route('/upload', methods=['POST','GET'])
 @cross_origin()
+@login_required
 def upload():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -45,10 +48,11 @@ def upload():
 
         if allowed_file(filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'],session.get("name"), filename))
+            print(current_user, app.root_path, app.instance_path, os.path.dirname(app.instance_path))
+            file.save(os.path.join(app.config['DATA_FOLDER'],current_user.name, filename))
             session["tax_filename"] = filename
 
-            data = tax_stocks(os.path.join(session.get('userpath'),session.get('tax_filename')))
+            data = tax_stocks(os.path.join(app.config['DATA_FOLDER'],current_user.name, filename))
             # data = tax_stocks('./data/sid/2021Q1.csv')
             
             # return jsonify([{"category":"Short Term Capital Gain (STT paid)","label":"loss","pnl":189838.69},{"category":"Short Term Capital Gain (STT paid)","label":"profit","pnl":271110.5},{"category":"Speculation Income (STT paid)","label":"loss","pnl":98426.22},{"category":"Speculation Income (STT paid)","label":"profit","pnl":138592.35}])

@@ -15,12 +15,15 @@ from app.auth.models import User
 
 from flask import current_app as app, send_from_directory
 
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 portfolio = Blueprint('portfolio', __name__, url_prefix='/portfolio/')
 
 # Set the route and accepted methods
 @portfolio.route('/', defaults={'path': ''})
 @portfolio.route('/<path:path>')
+@login_required
 def portfolio_base(path):
     print(app.static_folder)
     # return 'ok'

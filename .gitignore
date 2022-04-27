@@ -10,6 +10,9 @@ __pycache__/
 /jupyter_files/
 .vscode/
 
+app.db
+/drive/
+
 #react ignores
 
 # dependencies

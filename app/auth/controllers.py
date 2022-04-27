@@ -1,9 +1,11 @@
 # Import flask dependencies
+import os
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from flask_login import current_user, login_user
 
 # Import password / encryption helper tools
 from werkzeug.security import check_password_hash, generate_password_hash
+from app.api.utils import create_folder
 
 # Import the database object from the main app module
 from app.db_config import db
@@ -15,7 +17,7 @@ from app.auth.forms import LoginForm
 from app.auth.models import User
 
 from flask import current_app as app
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -55,6 +57,7 @@ def signin():
 
 
 @auth.route("/signup/", methods=["POST", "GET"])
+@auth.route("/signup", methods=["POST", "GET"])
 def signup():
     if request.method == "POST":
         email = request.form.get('email')
@@ -70,9 +73,17 @@ def signup():
 
         db.session.add(new_user)
         db.session.commit()
+        create_folder(os.path.join(app.config['DATA_FOLDER'],name))
 
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.signin'))
     if request.method == "GET":
         if current_user.is_authenticated:
             return redirect('/portfolio')
         return render_template('auth/signup.html') 
+
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have successfully logged yourself out.')
+    return redirect(url_for('auth.signin'))

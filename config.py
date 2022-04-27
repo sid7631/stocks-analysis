@@ -31,6 +31,8 @@ class Config(object):
 
     static_folder = 'client/build'
 
+    DATA_FOLDER = 'drive'
+
 class ProductionConfig(Config):
     DATABASE_URI = 'mysql://user@localhost/foo'
 
