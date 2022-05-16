@@ -38,7 +38,7 @@ const UploadFiles = (props) => {
         setprogress(0)
         setcurrentFile(currentFile)
 
-        UploadService.upload(currentFile, (event) => {
+        UploadService.upload(props.url, currentFile, (event) => {
             setprogress(Math.round((100 * event.loaded) / event.total))
         })
             .then((response) => {

@@ -5,7 +5,7 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Import the database object from the main app module
-from app.db_config import db
+from app.app_config import db
 
 # Import module forms
 from app.auth.forms import LoginForm

@@ -13,7 +13,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from "react-router-dom";
 import { makeStyles } from '@mui/styles';
-const pages = ['dashboard', 'tax', 'learn'];
+
+const pages = ['dashboard', 'holdings', 'mutualfund', 'tax', 'learn'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const headerHeight = 48

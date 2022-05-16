@@ -4,22 +4,23 @@ from pathlib import Path
 from flask import Flask, render_template
 from flask_login import LoginManager
 
+
 # Import SQLAlchemy
 
 
 from flask_wtf.csrf import CSRFProtect
-from app.api.utils import create_folder
 from app.auth.models import User
+from flask_cors import CORS, cross_origin
 
 
 
 from config import Config
-from app.db_config import db
+from app.app_config import db, migrate, create_folder
 
 
 # Define the WSGI application object
 app = Flask(__name__,static_folder='client/build',static_url_path='')
-
+cors = CORS(app)
 # Configurations
 app.config.from_object('config.DevelopmentConfig')
 # app.secret_key = 'secret'
@@ -42,6 +43,8 @@ from app.auth.controllers import auth as auth
 from app.portfolio.controllers import portfolio as portfolio
 from app.api.controller import api as api
 
+
+
 # Register blueprint(s)
 app.register_blueprint(auth)
 app.register_blueprint(portfolio)
@@ -54,6 +57,9 @@ app.register_blueprint(api)
 db.init_app(app)
 db.app = app
 db.create_all()
+migrate.init_app(app, db)
+
+# db_master_init(db)
 
 create_folder(app.config['DATA_FOLDER'])
 
@@ -63,8 +69,13 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.signin'
 login_manager.init_app(app)
 
+
+
 @login_manager.user_loader
 def load_user(user_id):
     # since the user_id is just the primary key of our user table, use it in the query for the user
     return User.query.get(int(user_id))
+
+
+
 

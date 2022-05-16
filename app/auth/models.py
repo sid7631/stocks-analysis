@@ -1,6 +1,6 @@
 # Import the database object (db) from the main application module
 # We will define this inside /app/__init__.py in the next sections.
-from app.db_config import db
+from app.app_config import db
 from flask_login import UserMixin
 
 
@@ -26,8 +26,7 @@ class User(Base):
     name    = db.Column(db.String(128),  nullable=False)
 
     # Identification Data: email & password
-    email    = db.Column(db.String(128),  nullable=False,
-                                            unique=True)
+    email    = db.Column(db.String(128),  nullable=False,unique=True)
     password = db.Column(db.String(192),  nullable=False)
 
     # Authorisation Data: role & status

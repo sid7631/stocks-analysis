@@ -5,10 +5,10 @@ from flask_login import current_user, login_user
 
 # Import password / encryption helper tools
 from werkzeug.security import check_password_hash, generate_password_hash
-from app.api.utils import create_folder
+from app.app_config import create_folder
 
 # Import the database object from the main app module
-from app.db_config import db
+from app.app_config import db
 
 # Import module forms
 from app.auth.forms import LoginForm

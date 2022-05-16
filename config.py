@@ -12,6 +12,7 @@ class Config(object):
     # SQLite for this example
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
     DATABASE_CONNECT_OPTIONS = {}
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Application threads. A common general assumption is
     # using 2 per available processor cores - to handle
@@ -37,6 +38,8 @@ class ProductionConfig(Config):
     DATABASE_URI = 'mysql://user@localhost/foo'
 
 class DevelopmentConfig(Config):
+    CELERY_BROKER_URL='redis://localhost:6379',
+    CELERY_RESULT_BACKEND='redis://localhost:6379'
     DEBUG = True
 
 class TestingConfig(Config):

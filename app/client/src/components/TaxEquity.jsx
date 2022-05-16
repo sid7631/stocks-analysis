@@ -78,7 +78,7 @@ const TaxEquity = () => {
             {
                 data.length === 0 ? (
                     <Box sx={{ display: { xs: 'flex', md: 'flex' }, alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                        <UploadFiles labelIdle='Import your stocks data to generate a report' cb={onUpload}>
+                        <UploadFiles labelIdle='Import your stocks data to generate a report' url="/api/upload/tax" cb={onUpload}>
                             <Box sx={{ height: { xs: 200, md: 200 }, mb: 4, mt: 2, ":hover": { cursor: 'pointer' } }} >
                                 <img src={AddFilesIcon} alt="" style={{ width: 'inherit', height: 'inherit' }} />
                             </Box>
