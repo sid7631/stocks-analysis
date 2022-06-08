@@ -50,14 +50,17 @@ app.register_blueprint(auth)
 app.register_blueprint(portfolio)
 app.register_blueprint(api)
 
-
+import logging
+logging.basicConfig(filename='app.log',encoding='utf-8', level=logging.INFO)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
+logging.getLogger("pdfminer").setLevel(logging.WARNING)
 
 # Build the database:
 # This will create the database file using SQLAlchemy
 db.init_app(app)
 db.app = app
 db.create_all()
-migrate.init_app(app, db)
+migrate.init_app(app, db,render_as_batch=True)
 
 # db_master_init(db)
 

@@ -1,9 +1,12 @@
 # Import flask dependencies
 from crypt import methods
+import logging
 from flask import Blueprint, jsonify, request, render_template, flash, g, session, redirect, url_for, Response
 from flask_cors import cross_origin
 import os
 import pandas as pd
+from app.api.casimoprter import import_cas
+from app.api.mutual_fund import mutual_fund_summary
 
 from app.tasks import celery
 
@@ -11,7 +14,9 @@ from app.tasks import celery
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from app.api.models import Holdings, Portfolio
-from app.api.utils import import_cas, init_mf_portfolio, tax_stocks, upload_files
+from app.api.utils import  init_mf_portfolio, tax_stocks, upload_files
+import json
+
 
 # Import the database object from the main app module
 from app.app_config import db
@@ -34,6 +39,8 @@ api = Blueprint('api', __name__, url_prefix='/api')
 ALLOWED_EXTENSIONS_TAX = ['csv', 'xlsx']
 
 ALLOWED_EXTENSIONS_MF = ['pdf']
+
+logger = logging.getLogger(__name__)
 
 def allowed_file(filename, ALLOWED_EXTENSIONS):
     extension = filename.rsplit('.', 1)[1].lower()
@@ -104,10 +111,9 @@ def upload_mutual_fund():
         file_path = os.path.join(app.config['DATA_FOLDER'],current_user.name)
         file_meta = upload_files(request,file_path,allowed_extensions=ALLOWED_EXTENSIONS_MF)
         if file_meta['status'] == 200:
-            print(current_user.id)
-            print('success')
+            logger.info("logged in user %s",str(current_user.id))
             data = init_mf_portfolio(os.path.join(file_path,file_meta['filename']))
-            response_obj = import_cas(data,current_user.id,db)
+            response_obj = import_cas(data,current_user.id)
         #     #update portfolio
         #     portfolio = Portfolio.query.filter_by(email=data['investor_info']['email']).first()
         #     if portfolio:
@@ -138,3 +144,12 @@ def get_status(task_id):
         "task_result": task_result.result
     }
     return jsonify(result), 200
+
+@api.route('/mutualfund', methods=['POST', 'GET'])
+@cross_origin()
+def mutual_fund():
+    if request.method == 'GET':
+        # data = mutual_fund_summary(current_user.id)
+        data = mutual_fund_summary(1)
+        response_obj = jsonify(data)
+        return response_obj, 200

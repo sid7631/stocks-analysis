@@ -36,3 +36,7 @@ app.db
 /app/client/npm-debug.log*
 /app/client/yarn-debug.log*
 /app/client/yarn-error.log*
+app.log
+/migrations
+app-scheme*
+output*

@@ -105,7 +105,7 @@ def update_portfolio_value(start_date=None, portfolio_id=None, scheme_dates=None
     elif isinstance(start_date, date):
         from_date2 = start_date
     else:
-        qs = db.session.query(SchemeValue,FolioScheme,  Folio).filter(SchemeValue.scheme==FolioScheme.scheme).filter(FolioScheme.folio==Folio.number).filter(Folio.portfolio==portfolio_id).order_by(asc("date")).first()
+        qs = db.session.query(SchemeValue,Folio).filter(SchemeValue.scheme_id==Folio.number).filter(Folio.portfolio==portfolio_id).order_by(asc("date")).first()
         if qs.SchemeValue.date is not None:
             from_date2 = qs.SchemeValue.date 
     
@@ -214,7 +214,7 @@ def update_portfolio_value(start_date=None, portfolio_id=None, scheme_dates=None
         scheme_vals.fillna(value=0, inplace=True)
         scheme_vals["value"] = scheme_vals["nav"] * scheme_vals["balance"]
         scheme_vals["scheme"] = i.FolioScheme.scheme
-        scheme_vals['scheme_id'] = i.FolioScheme.id
+        scheme_vals['scheme_id'] = i.FolioScheme.folio
         scheme_vals = scheme_vals.reset_index().rename(columns={"index": "date"})
         dfs.append(scheme_vals)
     if len(dfs) == 0:
@@ -222,10 +222,10 @@ def update_portfolio_value(start_date=None, portfolio_id=None, scheme_dates=None
         return
     final_df = pd.concat(dfs)
     print(f"SchemeValue :: {len(final_df)} rows")
-    dataset = Dataset().load(final_df)
+    # dataset = Dataset().load(final_df)
     for row in final_df.to_records():
-        insert_stmt = insert(SchemeValue).values(date=datetime.datetime.strptime(str(row[1])[:10],"%Y-%m-%d"),invested=row[2],avg_nav=row[3],balance=row[4],nav=row[5],value=row[6],scheme=row[7],scheme_id=row[8].item())
-        do_update_stmt = insert_stmt.on_conflict_do_update(index_elements=['scheme_id','date'],set_=dict(date=datetime.datetime.strptime(str(row[1])[:10],"%Y-%m-%d"),invested=row[2],avg_nav=row[3],balance=row[4],nav=row[5],value=row[6],scheme=row[7],scheme_id=row[8].item()))
+        insert_stmt = insert(SchemeValue).values(date=datetime.datetime.strptime(str(row[1])[:10],"%Y-%m-%d"),invested=row[2],avg_nav=row[3],balance=row[4],nav=row[5],value=row[6],scheme=row[7],scheme_id=row[8])
+        do_update_stmt = insert_stmt.on_conflict_do_update(index_elements=['scheme_id','date'],set_=dict(date=datetime.datetime.strptime(str(row[1])[:10],"%Y-%m-%d"),invested=row[2],avg_nav=row[3],balance=row[4],nav=row[5],value=row[6],scheme=row[7],scheme_id=row[8]))
         db.session.execute(do_update_stmt)
     db.session.commit()
 
@@ -264,7 +264,7 @@ def update_portfolio_value(start_date=None, portfolio_id=None, scheme_dates=None
 
     if len(dfs) > 0:
         merged_df = pd.concat(dfs)
-        merged_df["scheme_id"] = merged_df["scheme_id"].astype("int")
+        merged_df["scheme_id"] = merged_df["scheme_id"]
         # merged_df["scheme__folio_id"] = merged_df["scheme__folio_id"].astype("int")
 
         merged_df = merged_df.reset_index().rename(
@@ -273,16 +273,12 @@ def update_portfolio_value(start_date=None, portfolio_id=None, scheme_dates=None
         merged_df = (
             merged_df.groupby(["date", "folio_id"])[["invested", "value"]].sum().reset_index()
         )
-        # folio_dataset = Dataset().load(merged_df)
-        # fv_resource = FolioValueResource()
 
-        # result = fv_resource.import_data(folio_dataset, dry_run=False)
-        # if result.has_errors():
-        #     for row in result.rows[:10]:
-        #         for error in row.errors:
-        #             print(error.error, error.traceback)
-        # else:
-        #     logger.info("Import success! :: %s", str(result.totals))
+        for row in merged_df.to_records():
+            insert_stmt = insert(FolioValue).values(date=datetime.datetime.strptime(str(row[1])[:10],"%Y-%m-%d"),folio=row[2],invested=row[3],value=row[4])
+            do_update_stmt = insert_stmt.on_conflict_do_update(index_elements=['folio','date'],set_=dict(date=datetime.datetime.strptime(str(row[1])[:10],"%Y-%m-%d"),folio=row[2],invested=row[3],value=row[4]))
+            db.session.execute(do_update_stmt)
+        db.session.commit()
 
 
 
