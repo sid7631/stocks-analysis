@@ -1,0 +1,89 @@
+[2022-08-21 21:50:36,096: INFO/MainProcess] Task NAVFetcher[5f58255f-19b9-4c8c-bfac-2567dc8949b6] received
+[2022-08-21 21:50:36,099: INFO/ForkPoolWorker-6] fetch nav called with task
+[2022-08-21 21:50:36,100: WARNING/ForkPoolWorker-6] fetch_nav running
+[2022-08-21 21:50:36,100: WARNING/ForkPoolWorker-6] [1, 2, 3, 4, 5, 6]
+[2022-08-21 21:50:36,101: WARNING/ForkPoolWorker-6]  
+[2022-08-21 21:50:36,101: WARNING/ForkPoolWorker-6] {'from_date': 'auto', 'portfolio_id': 1, 'scheme_dates': {}}
+[2022-08-21 21:50:36,127: WARNING/ForkPoolWorker-6] /Users/mac/Documents/GitHub/stocks-analysis/app/tasks.py:64: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  latest_nav_ = NAVHistory.query.filter_by(scheme=fund_scheme.id).order_by(desc("date")).first()
+
+[2022-08-21 21:50:36,128: INFO/ForkPoolWorker-6] Fetching NAV for 119351 from 2022-08-19
+[2022-08-21 21:50:38,810: INFO/ForkPoolWorker-6] Fetching NAV for 118285 from 2022-08-19
+[2022-08-21 21:50:41,514: INFO/ForkPoolWorker-6] Fetching NAV for 120186 from 2022-08-19
+[2022-08-21 21:50:44,551: INFO/ForkPoolWorker-6] Fetching NAV for 135781 from 2022-08-19
+[2022-08-21 21:50:47,179: INFO/ForkPoolWorker-6] Fetching NAV for 120847 from 2022-08-19
+[2022-08-21 21:50:50,013: INFO/ForkPoolWorker-6] Fetching NAV for 135800 from 2022-08-19
+[2022-08-21 21:50:52,609: INFO/ForkPoolWorker-6] Finished adding Nav History
+[2022-08-21 21:50:52,609: WARNING/ForkPoolWorker-6] {'from_date': 'auto', 'portfolio_id': 1, 'scheme_dates': {}}
+[2022-08-21 21:50:52,614: INFO/MainProcess] Task UpdatePortfolio[64da76b5-5c25-4cab-9842-8c4600358725] received
+[2022-08-21 21:50:52,615: INFO/ForkPoolWorker-6] Task NAVFetcher[5f58255f-19b9-4c8c-bfac-2567dc8949b6] succeeded in 16.516752832999998s: {'status': True}
+[2022-08-21 21:50:52,649: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:214: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  obj = query.order_by(desc("date")).first()
+
+[2022-08-21 21:50:52,652: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:229: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  scheme = FolioScheme.query.get(scheme_id)
+
+[2022-08-21 21:50:52,656: INFO/ForkPoolWorker-7] Ignoring scheme :: <FolioScheme 1>
+[2022-08-21 21:50:52,657: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:263: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  for txn in old_txns:
+
+[2022-08-21 21:50:52,659: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:274: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  NAVHistory.query.filter(NAVHistory.scheme==fund_scheme_id).order_by(desc("date")).first()
+
+[2022-08-21 21:50:52,667: ERROR/ForkPoolWorker-7] Task UpdatePortfolio[64da76b5-5c25-4cab-9842-8c4600358725] raised unexpected: TypeError("'<' not supported between instances of 'datetime.date' and 'NoneType'")
+Traceback (most recent call last):
+  File "/Users/mac/Documents/GitHub/stocks-analysis/.venv/lib/python3.9/site-packages/celery/app/trace.py", line 451, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/Users/mac/Documents/GitHub/stocks-analysis/.venv/lib/python3.9/site-packages/celery/app/trace.py", line 734, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/Users/mac/Documents/GitHub/stocks-analysis/app/tasks.py", line 111, in update_portfolios
+    update_portfolio_value(start_date = from_date, portfolio_id=portfolio_id,scheme_dates=scheme_dates)
+  File "/Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py", line 287, in update_portfolio_value
+    from_date_min = min(from_date, from_date_min)
+TypeError: '<' not supported between instances of 'datetime.date' and 'NoneType'
+[2022-08-21 21:52:57,886: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2022-08-21 21:52:57,888: INFO/MainProcess] mingle: searching for neighbors
+[2022-08-21 21:52:58,895: INFO/MainProcess] mingle: all alone
+[2022-08-21 21:52:58,902: INFO/MainProcess] celery@macs-MacBook-Pro.local ready.
+[2022-08-21 21:53:30,874: INFO/MainProcess] Task NAVFetcher[025b0d76-f289-42b6-b431-8afef77242bb] received
+[2022-08-21 21:53:30,876: INFO/ForkPoolWorker-6] fetch nav called with task
+[2022-08-21 21:53:30,877: WARNING/ForkPoolWorker-6] fetch_nav running
+[2022-08-21 21:53:30,877: WARNING/ForkPoolWorker-6] [1, 2, 3, 4, 5, 6]
+[2022-08-21 21:53:30,877: WARNING/ForkPoolWorker-6]  
+[2022-08-21 21:53:30,878: WARNING/ForkPoolWorker-6] {'from_date': 'auto', 'portfolio_id': 1, 'scheme_dates': {'1': '2022-04-04T00:00:00', '2': '2022-04-04T00:00:00', '3': '2022-01-17T00:00:00', '4': '2020-03-16T00:00:00', '5': '2022-01-17T00:00:00', '6': '2022-04-04T00:00:00', '7': '2022-04-04T00:00:00', '8': '2021-03-30T00:00:00', '9': '2022-01-17T00:00:00', '10': '2022-04-26T00:00:00'}}
+[2022-08-21 21:53:30,899: WARNING/ForkPoolWorker-6] /Users/mac/Documents/GitHub/stocks-analysis/app/tasks.py:64: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  latest_nav_ = NAVHistory.query.filter_by(scheme=fund_scheme.id).order_by(desc("date")).first()
+
+[2022-08-21 21:53:30,899: INFO/ForkPoolWorker-6] Fetching NAV for 119351 from 1970-01-01
+[2022-08-21 21:53:36,702: INFO/ForkPoolWorker-6] Fetching NAV for 118285 from 1970-01-01
+[2022-08-21 21:53:42,739: INFO/ForkPoolWorker-6] Fetching NAV for 120186 from 1970-01-01
+[2022-08-21 21:53:48,453: INFO/ForkPoolWorker-6] Fetching NAV for 135781 from 1970-01-01
+[2022-08-21 21:53:53,141: INFO/ForkPoolWorker-6] Fetching NAV for 120847 from 1970-01-01
+[2022-08-21 21:53:59,008: INFO/ForkPoolWorker-6] Fetching NAV for 135800 from 1970-01-01
+[2022-08-21 21:54:03,716: INFO/ForkPoolWorker-6] Finished adding Nav History
+[2022-08-21 21:54:03,716: WARNING/ForkPoolWorker-6] {'from_date': 'auto', 'portfolio_id': 1, 'scheme_dates': {'1': '2022-04-04T00:00:00', '2': '2022-04-04T00:00:00', '3': '2022-01-17T00:00:00', '4': '2020-03-16T00:00:00', '5': '2022-01-17T00:00:00', '6': '2022-04-04T00:00:00', '7': '2022-04-04T00:00:00', '8': '2021-03-30T00:00:00', '9': '2022-01-17T00:00:00', '10': '2022-04-26T00:00:00'}}
+[2022-08-21 21:54:03,726: INFO/MainProcess] Task UpdatePortfolio[484a65a3-bd12-4744-8f3c-4cf1cde997aa] received
+[2022-08-21 21:54:03,726: INFO/ForkPoolWorker-6] Task NAVFetcher[025b0d76-f289-42b6-b431-8afef77242bb] succeeded in 32.85130637500001s: {'status': True}
+[2022-08-21 21:54:03,765: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:214: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  obj = query.order_by(desc("date")).first()
+
+[2022-08-21 21:54:03,769: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:229: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  scheme = FolioScheme.query.get(scheme_id)
+
+[2022-08-21 21:54:03,774: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:251: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  from_date = min(from_date or new_txns[0].date, new_txns[0].date)
+
+[2022-08-21 21:54:03,777: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:274: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  NAVHistory.query.filter(NAVHistory.scheme==fund_scheme_id).order_by(desc("date")).first()
+
+[2022-08-21 21:54:03,916: INFO/ForkPoolWorker-7] SchemeValue :: 2708 rows
+[2022-08-21 21:54:08,427: INFO/ForkPoolWorker-7] SchemeValue Imported
+[2022-08-21 21:54:08,427: INFO/ForkPoolWorker-7] Updating FolioValue
+[2022-08-21 21:54:11,755: INFO/ForkPoolWorker-7] FolioValue updated
+[2022-08-21 21:54:11,755: INFO/ForkPoolWorker-7] Updating PortfolioValue
+[2022-08-21 21:54:11,761: WARNING/ForkPoolWorker-7] /Users/mac/Documents/GitHub/stocks-analysis/app/api/utils.py:191: SAWarning: Dialect sqlite+pysqlite does *not* support Decimal objects natively, and SQLAlchemy must convert from floating point - rounding errors and other issues may occur. Please consider storing Decimal numbers as strings or integers on this platform for lossless storage.
+  return session.query(model).filter_by(**kwargs).first()
+
+[2022-08-21 21:54:12,804: INFO/ForkPoolWorker-7] PortfolioValue updated
+[2022-08-21 21:54:12,804: WARNING/ForkPoolWorker-7] ok
+[2022-08-21 21:54:12,807: INFO/ForkPoolWorker-7] Task UpdatePortfolio[484a65a3-bd12-4744-8f3c-4cf1cde997aa] succeeded in 9.078997500000014s: {'status': True}
