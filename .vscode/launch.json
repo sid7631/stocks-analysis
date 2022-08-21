@@ -8,18 +8,18 @@
             "name": "Python: Flask",
             "type": "python",
             "request": "launch",
-            // "module": "python",
+            // "module": "flask",
             "program": "run.py",
-            "env": {
-                "FLASK_APP": "app",
-                "FLASK_ENV": "development"
-            },
-            "args": [
-                "run.py",
-                "--no-debugger"
-            ],
-            "jinja": true,
-            "justMyCode": true
+            // "env": {
+            //     "FLASK_APP": "app",
+            //     "FLASK_ENV": "development"
+            // },
+            // "args": [
+            //     "run:app",
+            //     "--no-debugger"
+            // ],
+            // "jinja": true,
+            // "justMyCode": true
         },
     ]
 }
