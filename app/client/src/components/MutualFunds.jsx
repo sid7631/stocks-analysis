@@ -54,7 +54,7 @@ const MutualFunds = () => {
                     <TabPanelUnstyled value={2}><Insights /></TabPanelUnstyled>
                 </TabsUnstyled>
             </Box>
-            {/* <Box sx={{ pt: 4 }}>
+            <Box sx={{ pt: 4 }}>
                 {
                     data.length === 0 ? (
                         <Box sx={{ display: { xs: 'flex', md: 'flex' }, alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
@@ -70,7 +70,7 @@ const MutualFunds = () => {
                         </>
                     )
                 }
-            </Box> */}
+            </Box>
         </>
     )
 }

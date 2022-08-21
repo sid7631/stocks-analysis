@@ -8,7 +8,7 @@ __pycache__/
 /flask_session/
 /data/
 /jupyter_files/
-.vscode/
+# .vscode/
 
 app.db
 /drive/
