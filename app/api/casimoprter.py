@@ -29,7 +29,7 @@ from app.api.utils import get_or_create, insert_or_update
 import numpy as np
 from sqlalchemy.sql import func
 from app.app_config import db
-from app.tasks import fetch_nav, create_task
+from app.tasks import fetch_nav, create_task, get_task_status
 
 logger = logging.getLogger(__name__)
 
@@ -124,8 +124,6 @@ def import_cas(data: CASParserDataType, user_id):
             if fund_scheme.id not in fund_schemes_list:
                 fund_schemes_list.add(fund_scheme.id)
 
-    
-
     fetch_task = fetch_nav.delay(
             fund_schemes_list=list(fund_schemes_list),
             update_portfolio_kwargs={
@@ -135,88 +133,13 @@ def import_cas(data: CASParserDataType, user_id):
             }
         )
     
-    fetch_task.wait()
+    # get_task_status(fetch_task.task_id)
+    # fetch_task.wait()
 
-    
-    return 'ok'
+    result = {
+        "task_id": fetch_task.task_id,
+        "task_status": get_task_status(fetch_task.task_id).status,
+        "task_result": get_task_status(fetch_task.task_id).result
+    }
 
-
-# def fetch_nav(fund_schemes_list=None,update_portfolio_kwargs=None):
-#     today = datetime.date.today()
-#     qs = FundScheme.query
-#     if isinstance(fund_schemes_list, list):
-#         qs = qs.filter(FundScheme.id.in_(list(fund_schemes_list)))
-#     for fund_scheme in qs.all():
-#         code = fund_scheme.amfi_code
-
-#         if code is None:
-#             logger.info('"Unable to lookup code for %s" % code')
-#             continue
-
-#         latest_nav_ = NAVHistory.query.filter_by(scheme=fund_scheme.id).order_by(desc("date")).first()
-
-#         if latest_nav_ is not None:
-#             latest_nav_date = latest_nav_.date
-#         else:
-#             latest_nav_date = datetime.date(1970,1,1)
-        
-#         if latest_nav_date == today:
-#             logger.info("Nav for %s is updated, skipping",code)
-#             continue
-
-#         logger.info("Fetching NAV for %s from %s", code, latest_nav_date.isoformat())
-
-#         mfapi_url = f"https://api.mfapi.in/mf/{code}"
-#         response = requests.get(mfapi_url, timeout=60)
-#         data = response.json()
-#         for item in reversed(data["data"]):
-#             date = date_parse(item["date"], dayfirst=True).date()
-#             if date <= latest_nav_date:
-#                 continue
-            
-#             nav_history = get_or_create(db.session, NAVHistory, scheme=fund_scheme.id, date=date, nav=item["nav"])
-        
-#         time.sleep(2)
-#     logger.info("Finished adding Nav History")
-
-#     kwargs = {}
-#     if isinstance(update_portfolio_kwargs, dict):
-#         kwargs.update(update_portfolio_kwargs)
-#     else:
-#         kwargs.update(from_date='auto')
-    
-#     update_portfolios(**kwargs)
-
-
-
-# def update_portfolios(from_date = None, portfolio_id=None, scheme_dates=None):
-#     update_portfolio_value(start_date = from_date, portfolio_id=portfolio_id,scheme_dates=scheme_dates)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    return result

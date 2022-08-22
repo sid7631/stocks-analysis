@@ -379,7 +379,7 @@ def update_portfolio_value(start_date = None, portfolio_id=None,scheme_dates=Non
     query = db.session.query(FolioValue,Folio).with_entities(FolioValue.date,func.sum(FolioValue.invested), func.sum(FolioValue.value),Folio.portfolio_id).filter(FolioValue.folio==Folio.number, FolioValue.date >= from_date_min)
     if portfolio_id is not None:
         query = query.filter(Folio.portfolio_id==portfolio_id)
-    query = query.group_by(FolioValue.date)
+    query = query.group_by(FolioValue.date, Folio.portfolio_id)
 
     for row in query.all():
         portfolio_value_update = insert_or_update(db.session,PortfolioValue,['portfolio_id','date'], date=row[0],invested=row[1],value=row[2],portfolio_id=portfolio_id)

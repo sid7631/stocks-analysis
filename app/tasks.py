@@ -31,6 +31,11 @@ registry.enable('application/text')
 
 logger = logging.getLogger(__name__)
 
+
+def get_task_status(task_id):
+    result = celery.AsyncResult(task_id)
+    return result
+
 @celery.task(name="create_task")
 def create_task(task_type):
     time.sleep(int(task_type) * 10)
@@ -92,9 +97,7 @@ def fetch_nav(fund_schemes_list=None,update_portfolio_kwargs=None):
         kwargs.update(update_portfolio_kwargs)
     else:
         kwargs.update(from_date='auto')
-    
-    # update_portfolios(**kwargs)
-    print(kwargs)
+        
     update_portfolios.delay(**kwargs)
     return {"status": True}
 

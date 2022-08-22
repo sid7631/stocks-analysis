@@ -1,5 +1,4 @@
-from app.api.models import Portfolio
-    # , PortfolioValue
+from app.api.models import Portfolio, PortfolioValue
 
 
 def mutual_fund_summary(user_id):

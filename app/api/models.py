@@ -104,6 +104,7 @@ class FundCategory(Base):
     """Fund Category (EQUITY, DEBT etc)"""
 
     __tablename__ = 'fund_category'
+    __table_args__ = (db.UniqueConstraint('type'),)
 
     class MainCategory(enum.Enum):
         EQUITY = "EQUITY"
@@ -113,7 +114,6 @@ class FundCategory(Base):
 
     type = db.Column(ChoiceType(MainCategory), default=MainCategory.EQUITY)
     subtype = db.Column(db.String(64))
-    fund_schemes = db.relationship('FundScheme')
 
     def __repr__(self):
         return f"{self.type} - {self.subtype}"
@@ -127,10 +127,16 @@ class FundScheme(Base):
         'REGULAR','DIRECT'
     ]
 
+    class MainCategory(enum.Enum):
+        EQUITY = "EQUITY"
+        DEBT = "DEBT"
+        HYBRID = "HYBRID"
+        OTHER = "OTHER"
+
     name = db.Column(db.String(512), index=True)
     amc = db.Column(db.String(128), db.ForeignKey('amc.name',ondelete='CASCADE'))
     rta = db.Column(db.String(12), nullable=True)
-    category = db.Column( db.ForeignKey('fund_category.id',ondelete='RESTRICT'), nullable=True)
+    category = db.Column(ChoiceType(MainCategory), nullable=True)
     plan = db.Column(db.String(8),  default=TYPES[1])
     rta_code = db.Column(db.String(32))
     amfi_code = db.Column(db.String(8), nullable=True, index=True)
