@@ -1,6 +1,5 @@
 from tokenize import String
 
-from django.forms import DateField
 from sqlalchemy import Date
 from app.app_config import db
 import enum
