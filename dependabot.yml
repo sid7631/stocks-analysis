@@ -3,10 +3,11 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      # Check for npm updates on Sundays
+      day: "friday"
     # Raise pull requests for version updates
     # to pip against the `develop` branch
-    target-branch: "vulnerability_fixes"
     # Labels on pull requests for version updates only
     labels:
       - "pip dependencies"
@@ -16,8 +17,9 @@ updates:
   - package-ecosystem: "npm"
     directory: "/app/client"
     schedule:
-      interval: "daily"
-    target-branch: "vulnerability_fixes"
+      interval: "weekly"
+      # Check for npm updates on Sundays
+      day: "friday"
     # Labels on pull requests for security and version updates
     labels:
       - "npm dependencies"
