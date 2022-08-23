@@ -41,6 +41,9 @@ class Portfolio(Base):
     email = db.Column(db.String(128),  nullable=False,unique=True)
     pan = db.Column(db.String(10),  nullable=True,unique=True)
     statement_date = db.Column(db.DateTime, nullable=True)
+    folios = db.relationship('Folio')
+    portfolio_value = db.relationship('PortfolioValue')
+    
 
     def __repr__(self):
         return '<Portfolio %r>' % (self.name) 
@@ -49,11 +52,11 @@ class AMC(db.Model):
     """Mutual Fund Asset Management Company (AMC)"""
     __tablename__ = 'amc'
 
-
     # code = db.Column(db.String(64), unique=True,primary_key=True)
     name = db.Column(db.String(128), primary_key = True)
     description = db.Column(db.String(2024),nullable=True)
-    
+    folios = db.relationship('Folio')
+    fund_schemes = db.relationship('FundScheme')
 
     def __init__(self,name,description=None):
         self.name = name
@@ -62,6 +65,7 @@ class AMC(db.Model):
 
     def __repr__(self):
         return self.name
+
 class Folio(db.Model):
     """Mutual Fund Folio"""
 
@@ -74,7 +78,9 @@ class Folio(db.Model):
     kyc = db.Column(db.Boolean,default=False)
     pan_kyc = db.Column(db.Boolean,default=False)
 
-    portfolio = db.relationship('Portfolio', backref=backref('Folio', passive_deletes=True))
+    # portfolio = db.relationship('Portfolio', backref=backref('Folio', passive_deletes=True))
+    folio_schemes = db.relationship('FolioScheme')
+    folio_values = db.relationship('FolioValue')
 
     @classmethod
     def get_pan_kyc(cls, param):
@@ -93,10 +99,12 @@ class Folio(db.Model):
         self.pan = pan
         self.kyc = kyc
         self.pan_kyc = pan_kyc
+
 class FundCategory(Base):
     """Fund Category (EQUITY, DEBT etc)"""
 
     __tablename__ = 'fund_category'
+    __table_args__ = (db.UniqueConstraint('type'),)
 
     class MainCategory(enum.Enum):
         EQUITY = "EQUITY"
@@ -109,6 +117,7 @@ class FundCategory(Base):
 
     def __repr__(self):
         return f"{self.type} - {self.subtype}"
+
 class FundScheme(Base):
     """Mutual fund schemes"""
     __tablename__ = 'fund_scheme'
@@ -118,14 +127,22 @@ class FundScheme(Base):
         'REGULAR','DIRECT'
     ]
 
+    class MainCategory(enum.Enum):
+        EQUITY = "EQUITY"
+        DEBT = "DEBT"
+        HYBRID = "HYBRID"
+        OTHER = "OTHER"
+
     name = db.Column(db.String(512), index=True)
     amc = db.Column(db.String(128), db.ForeignKey('amc.name',ondelete='CASCADE'))
     rta = db.Column(db.String(12), nullable=True)
-    category = db.Column( db.ForeignKey('fund_category.id',ondelete='RESTRICT'), nullable=True)
+    category = db.Column(ChoiceType(MainCategory), nullable=True)
     plan = db.Column(db.String(8),  default=TYPES[1])
     rta_code = db.Column(db.String(32))
     amfi_code = db.Column(db.String(8), nullable=True, index=True)
     isin = db.Column(db.String(16), index=True)
+    folio_schemes = db.relationship('FolioScheme')
+    nav_histories = db.relationship('NAVHistory')
 
     def __init__(self, name,amc,rta,category,plan,rta_code,amfi_code,isin):
         self.name = name
@@ -161,6 +178,8 @@ class FolioScheme(Base):
     valuation_date = db.Column(db.Date, nullable=True)
     # created  = db.Column(db.DateTime,  default=db.func.current_timestamp())
     # modified = db.Column(db.DateTime,  default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    transactions = db.relationship('Transaction')
+    scheme_value = db.relationship('SchemeValue')
 
     def __init__(self, scheme, folio, valuation, valuation_date,xirr=None):
         self.scheme = scheme

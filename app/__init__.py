@@ -17,10 +17,14 @@ from flask_cors import CORS, cross_origin
 from config import Config
 from app.app_config import db, migrate, create_folder
 
-
+CONFIG_ORIGINS = [
+    'http://localhost:8080',  # React
+    'http://127.0.0.1:8080',  # React
+  ]
 # Define the WSGI application object
 app = Flask(__name__,static_folder='client/build',static_url_path='')
-cors = CORS(app)
+cors = CORS(app, resources={r"/api": {"origins": "http://localhost:3000"}})
+CORS(app, resources={ r'/*': {'origins': CONFIG_ORIGINS}}, supports_credentials=True)
 # Configurations
 app.config.from_object('config.DevelopmentConfig')
 # app.secret_key = 'secret'
@@ -51,7 +55,7 @@ app.register_blueprint(portfolio)
 app.register_blueprint(api)
 
 import logging
-logging.basicConfig(filename='app.log',encoding='utf-8', level=logging.INFO)
+logging.basicConfig(filename='app/logs/app.log',encoding='utf-8', level=logging.INFO)
 logging.getLogger("werkzeug").setLevel(logging.WARNING)
 logging.getLogger("pdfminer").setLevel(logging.WARNING)
 

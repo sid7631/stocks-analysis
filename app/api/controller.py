@@ -103,17 +103,21 @@ def holdings():
         db.session.bulk_save_objects(holdings_object)
         db.session.commit()
         return 'ok'
-    
+
 @api.route('/upload/mutualfund', methods=['POST', 'GET'])
 @cross_origin()
 def upload_mutual_fund():
     if request.method == 'POST':
-        file_path = os.path.join(app.config['DATA_FOLDER'],current_user.name)
+        file_path = os.path.join(app.config['DATA_FOLDER'],'test')
         file_meta = upload_files(request,file_path,allowed_extensions=ALLOWED_EXTENSIONS_MF)
         if file_meta['status'] == 200:
-            logger.info("logged in user %s",str(current_user.id))
+            logger.info("logged in user %s",str(1))
             data = init_mf_portfolio(os.path.join(file_path,file_meta['filename']))
-            response_obj = import_cas(data,current_user.id)
+            result = import_cas(data,1)
+        if result['task_status'].lower() == 'pending':
+            return result, 202
+        return result, 200
+
         #     #update portfolio
         #     portfolio = Portfolio.query.filter_by(email=data['investor_info']['email']).first()
         #     if portfolio:
@@ -125,7 +129,30 @@ def upload_mutual_fund():
         #     return data, 200
         # else:
         #     return file_meta['message'], 400
-        return response_obj, 200
+        # return result, 200
+
+# @api.route('/upload/mutualfund', methods=['POST', 'GET'])
+# @cross_origin()
+# def upload_mutual_fund():
+#     if request.method == 'POST':
+#         file_path = os.path.join(app.config['DATA_FOLDER'],current_user.name)
+#         file_meta = upload_files(request,file_path,allowed_extensions=ALLOWED_EXTENSIONS_MF)
+#         if file_meta['status'] == 200:
+#             logger.info("logged in user %s",str(current_user.id))
+#             data = init_mf_portfolio(os.path.join(file_path,file_meta['filename']))
+#             response_obj = import_cas(data,current_user.id)
+#         #     #update portfolio
+#         #     portfolio = Portfolio.query.filter_by(email=data['investor_info']['email']).first()
+#         #     if portfolio:
+#         #         print(portfolio)
+#         #     else:
+#         #         new_portfolio = Portfolio(user=current_user.id,name=data['investor_info']['name'],email=data['investor_info']['email'])
+#         #         db.session.add(new_portfolio)
+#         #         db.session.commit()
+#         #     return data, 200
+#         # else:
+#         #     return file_meta['message'], 400
+#         return response_obj, 200
 
 @api.route("/tasks", methods=["POST"])
 def run_task():
@@ -135,6 +162,7 @@ def run_task():
     return jsonify({"task_id": task.id}), 202
 
 @api.route("/tasks/<task_id>", methods=["GET"])
+@cross_origin()
 def get_status(task_id):
     # task_result = AsyncResult(task_id)
     task_result = celery.AsyncResult(task_id)
@@ -143,7 +171,7 @@ def get_status(task_id):
         "task_status": task_result.status,
         "task_result": task_result.result
     }
-    return jsonify(result), 200
+    return result, 200
 
 @api.route('/mutualfund', methods=['POST', 'GET'])
 @cross_origin()
