@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Raise pull requests for version updates
+    # to pip against the `develop` branch
+    target-branch: "vulnerability_fixes"
+    # Labels on pull requests for version updates only
+    labels:
+      - "pip dependencies"
+    assignees:
+      - "sid7631"
+
+  - package-ecosystem: "npm"
+    directory: "/app/client"
+    schedule:
+      interval: "daily"
+    target-branch: "vulnerability_fixes"
+    # Labels on pull requests for security and version updates
+    labels:
+      - "npm dependencies"
+    assignees:
+      - "sid7631"
