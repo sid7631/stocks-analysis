@@ -1,5 +1,4 @@
 # Import flask dependencies
-from crypt import methods
 import logging
 from flask import Blueprint, jsonify, request, render_template, flash, g, session, redirect, url_for, Response
 from flask_cors import cross_origin
@@ -178,6 +177,12 @@ def get_status(task_id):
 def mutual_fund():
     if request.method == 'GET':
         # data = mutual_fund_summary(current_user.id)
-        data = mutual_fund_summary(1)
-        response_obj = jsonify(data)
-        return response_obj, 200
+        summary = mutual_fund_summary(1)
+        # response_obj = jsonify(data)
+        return summary, 200
+
+# @api.route('/mutualfund/performance_summary', methods=['POST', 'GET'])
+# @cross_origin()
+# def mf_performance_summary():
+#     if request.method == 'GET':
+#         data = mutual_fund_summary
