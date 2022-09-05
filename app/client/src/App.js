@@ -17,6 +17,7 @@ import Tax from './components/Tax';
 import { makeStyles } from '@mui/styles';
 import TaxEquity from './components/TaxEquity';
 import MutualFunds from './components/MutualFunds';
+import FundSummary from './components/MutualFunds/FundSummary';
 
 
 const theme = createTheme();
@@ -47,6 +48,7 @@ function App() {
               <Route exact path="/" element={<Home />} />
               <Route exact path="/dashboard" element={<Dashboard />} />
               <Route exact path='/mutualfund' element={<MutualFunds />} />
+              <Route exact path='/mutualfund/:isin' element={<FundSummary />} />
               <Route exact path="/tax" element={<Tax />} >
                 <Route path="/tax/" element={<>ok</>} />
                 <Route path='/tax/equity' element={<TaxEquity/>} />

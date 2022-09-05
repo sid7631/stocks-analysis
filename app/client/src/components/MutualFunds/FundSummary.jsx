@@ -9,60 +9,46 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import UtilService from '../../services/util.service';
 import OutlinedCard from '../common/OutlinedCard';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
+const FundSummary = () => {
 
-const PerformanceSummary = () => {
+    const [performance, setperformance] = useState([])
+    const [loading, setloading] = useState(false)
+    const { isin } = useParams();
 
-  const [summary, setsummary] = useState(null)
-  const [performance, setperformance] = useState([])
-  const [funds, setfunds] = useState([])
-  const [loading, setloading] = useState(false)
-  let navigate = useNavigate();
+    useEffect(() => {
+        setloading(true)
+        MutualFundService.getAmcSummary(isin).then(response => {
+            setperformance(response.data.performance)
+            setloading(false)
+        }).catch(error => {
+            console.log(error)
+            setloading(false)
+        })
 
-  useEffect(() => {
+        return () => {
+            // second
+        }
+    }, [])
 
-    setloading(true)
-    MutualFundService.getPerformance().then(response => {
-      setsummary(response.data.summary)
-      setperformance(response.data.performance)
-      setfunds(response.data.funds)
-      setloading(false)
-    }).catch(error => {
-      console.log(error)
-      setloading(false)
-    })
-
-    return () => {
-      // second
-    }
-  }, [])
-
-  const cardAction = (param) => {
-    navigate(param)
-  }
-
-
-  return (
-    <>
-      {loading ? (
-
-        <Box sx={{ width: '100%' }}>
-          <Skeleton />
-          <Skeleton animation="wave" />
-          <Skeleton animation={false} />
-        </Box>
-      ) : (
-
-        <>
-          <Box sx={{ flexGrow: 1 }}>
+    return (
+        <React.Fragment>
+            {loading ? (
+                <Box sx={{ width: '100%' }}>
+                    <Skeleton />
+                    <Skeleton animation="wave" />
+                    <Skeleton animation={false} />
+                </Box>
+            ) : (<>
+             <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
 
               <Grid xs={12}>
                 <Box sx={{ marginBottom: 2 }}>
                   <Typography>Portfolio Performance</Typography>
                 </Box>
-                <Box>
+                {/* <Box>
                   <Stack direction='row' justifyContent={'space-between'} spacing={0} marginBottom={2}>
                     <Box display={'flex'} flexDirection='column'>
                       <Typography variant="subtitle2" color={grey[500]} component="div">Current Value</Typography>
@@ -75,7 +61,7 @@ const PerformanceSummary = () => {
                       <Typography variant="subtitle2" component="div">1 Day Change ₹ {UtilService.numberFormat(summary?.day_change)} ▼{summary?.day_change_perc}%</Typography>
                     </Box>
                   </Stack>
-                </Box>
+                </Box> */}
                 <HighchartsReact
                   highcharts={Highcharts}
                   constructorType={"stockChart"}
@@ -114,29 +100,11 @@ const PerformanceSummary = () => {
                   }}
                 />
               </Grid>
-              <Grid xs={12}>
-                <Box sx={{ marginBottom: 2 }}>
-                  <Typography>My Mutual Funds</Typography>
-                </Box>
-                <Grid container spacing={2}>
-                  {funds.map((item, index) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={index} >
-                      <OutlinedCard  data={item} action={cardAction}></OutlinedCard>
-                    </Grid>
-                  ))}
-
-                </Grid>
-
-
-              </Grid>
             </Grid>
           </Box>
-        </>
-      )}
-    </>
-  )
+            </>)}
+        </React.Fragment>
+    )
 }
 
-export default PerformanceSummary
-
-
+export default FundSummary

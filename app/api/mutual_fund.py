@@ -1,6 +1,8 @@
-from app.api.models import Portfolio, PortfolioValue
-from sqlalchemy import desc, cast, String, Numeric, Float
-
+from app.api.models import Folio, FolioScheme, FundScheme, Portfolio, PortfolioValue, SchemeValue
+from sqlalchemy import desc, cast, String, Numeric, Float, func, and_
+from app.app_config import db
+import pandas as pd
+import json
 
 def mutual_fund_summary(user_id):
     portfolio = Portfolio.query.filter_by(user=user_id).first()
@@ -22,10 +24,71 @@ def mutual_fund_summary(user_id):
     performance_query = PortfolioValue.query.with_entities(PortfolioValue.date,cast(PortfolioValue.value, Float)).filter_by(portfolio_id=1).order_by("date")
     performance = [ [int(x.strftime("%s"))*1000, y] for x,y in performance_query ]
 
+
+    #get schemevalue summary
+    subq = db.session.query(
+        SchemeValue.scheme,
+        func.max(SchemeValue.date).label('maxdate')
+    ).group_by(SchemeValue.scheme).subquery('t2')
+
+    query = db.session.query(FundScheme.name,FundScheme.amc,FundScheme.isin, FundScheme.category, FundScheme.plan, Folio.number, SchemeValue.scheme, SchemeValue.avg_nav, SchemeValue.nav, SchemeValue.balance, SchemeValue.date, SchemeValue.invested, SchemeValue.value).join(
+        subq,
+        and_(
+            SchemeValue.scheme == subq.c.scheme,
+            SchemeValue.date == subq.c.maxdate
+        )
+    ).join(FolioScheme).filter(FolioScheme.id==SchemeValue.scheme).join(Folio).filter(
+        Folio.number==FolioScheme.folio, Folio.portfolio_id==portfolio.id
+    ).join(FundScheme).filter(
+        FundScheme.id == FolioScheme.scheme
+    )
+    scheme_value_summary = pd.read_sql(query.statement, query.session.bind)
+    scheme_value_summary = scheme_value_summary.groupby(['name','isin']).agg({'balance':'sum','invested':'sum','value':'sum','nav':'mean'}).reset_index().sort_values(by=['value'],ascending=False)
+    scheme_value_summary['avg_nav'] = scheme_value_summary['invested']/scheme_value_summary['balance']
+    scheme_value_summary['profit'] = scheme_value_summary['value']-scheme_value_summary['invested']
+    scheme_value_summary = scheme_value_summary.round(decimals = 0)
+    scheme_value_summary = scheme_value_summary.to_json(orient='records')
+
     resp = {
         'summary': summary,
-        'performance':performance
+        'performance':performance,
+        'funds':json.loads(scheme_value_summary)
     }
 
+
+    return resp
+
+
+def amc_summary(user_id,isin):
+    portfolio = Portfolio.query.filter_by(user=user_id).first()
+    if portfolio is None:
+        return 'Mutual Funds data absent'
+
+
+    subq = db.session.query(
+    SchemeValue.scheme,
+        # func.max(SchemeValue.date).label('maxdate')
+    ).group_by(SchemeValue.scheme).subquery('t2')
+
+    query = db.session.query(FundScheme.name,Folio.amc, Folio.number, SchemeValue.scheme, SchemeValue.avg_nav, SchemeValue.nav, SchemeValue.balance, SchemeValue.date, SchemeValue.invested, SchemeValue.value).join(
+        subq,
+        and_(
+            SchemeValue.scheme == subq.c.scheme,
+            # SchemeValue.date == subq.c.maxdate
+        )
+    ).join(FolioScheme).filter(FolioScheme.id==SchemeValue.scheme).join(Folio).filter(
+        Folio.number==FolioScheme.folio, Folio.portfolio_id==portfolio.id
+    ).join(FundScheme).filter(
+        FundScheme.id == FolioScheme.scheme,
+        FundScheme.isin == isin
+    )
+
+    performance = pd.read_sql(query.statement, query.session.bind)
+    performance = performance.groupby(['name','date']).sum().reset_index()
+    performance = performance[['date','value']].to_json(orient='values')
+
+    resp = {
+        'performance': json.loads(performance)
+    }
 
     return resp

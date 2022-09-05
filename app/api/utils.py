@@ -170,7 +170,7 @@ def upload_files(request, file_path,allowed_extensions):
         return {"status":404,"message":'file extension not allowed'}
 
 def init_mf_portfolio(file_path):
-    data = casparser.read_cas_pdf(file_path, "Sid@78088")
+    data = casparser.read_cas_pdf(file_path, "Sid@1234")
     return data
 
 def get_or_create(session, model, **kwargs):

@@ -5,7 +5,7 @@ from flask_cors import cross_origin
 import os
 import pandas as pd
 from app.api.casimoprter import import_cas
-from app.api.mutual_fund import mutual_fund_summary
+from app.api.mutual_fund import amc_summary, mutual_fund_summary
 
 from app.tasks import celery
 
@@ -179,6 +179,13 @@ def mutual_fund():
         # data = mutual_fund_summary(current_user.id)
         summary = mutual_fund_summary(1)
         # response_obj = jsonify(data)
+        return summary, 200
+
+@api.route('/amc/<isin>', methods=['POST', 'GET'])
+@cross_origin()
+def amc(isin):
+    if request.method == 'GET':
+        summary = amc_summary(1,isin)
         return summary, 200
 
 # @api.route('/mutualfund/performance_summary', methods=['POST', 'GET'])
