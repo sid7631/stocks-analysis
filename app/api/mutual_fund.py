@@ -1,4 +1,4 @@
-from app.api.models import Folio, FolioScheme, FundScheme, Portfolio, PortfolioValue, SchemeValue
+from app.api.models import Folio, FolioScheme, FolioValue, FundScheme, Portfolio, PortfolioValue, SchemeValue
 from sqlalchemy import desc, cast, String, Numeric, Float, func, and_
 from app.app_config import db
 import pandas as pd
@@ -85,10 +85,40 @@ def amc_summary(user_id,isin):
 
     performance = pd.read_sql(query.statement, query.session.bind)
     performance = performance.groupby(['name','date']).sum().reset_index()
-    performance = performance[['date','value']].to_json(orient='values')
+    performance = json.loads(performance[['date','value']].to_json(orient='values'))
+
+
+    #get amc detailed performance
+    subq = db.session.query(
+        FolioValue.folio,
+        func.max(FolioValue.date).label('maxdate')
+    ).group_by(FolioValue.folio).subquery('t2')
+
+    query = db.session.query(FundScheme.name, FundScheme.amc, FolioValue.folio, FundScheme.category, FundScheme.plan, FundScheme.isin , FolioValue.invested, FolioValue.value).join(
+        subq,
+        and_(
+            FolioValue.folio == subq.c.folio,
+            FolioValue.date == subq.c.maxdate
+        )
+    ).join(Folio).filter(
+        FolioValue.folio == Folio.number,
+        Folio.amc == FundScheme.amc,
+        FundScheme.isin == isin,
+        Folio.portfolio_id == portfolio.id
+    )
+
+    fund_summary = pd.read_sql(query.statement, query.session.bind)
+    fund_summary['profit'] = fund_summary['value'] - fund_summary['invested']
+    folio_summary = json.loads(fund_summary.to_json(orient='records'))
+
+    fund_summary_detail = fund_summary.groupby(['name', 'amc', 'isin', 'category', 'plan']).sum().reset_index()
+    fund_summary_detail = json.loads(fund_summary_detail.to_json(orient='records'))[0]
+
 
     resp = {
-        'performance': json.loads(performance)
+        'performance': performance,
+        'summary' : fund_summary_detail,
+        'folio_summary':folio_summary,
     }
 
     return resp
