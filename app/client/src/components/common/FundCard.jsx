@@ -11,7 +11,7 @@ import Fingerprint from '@mui/icons-material/Fingerprint';
 import Chip from '@mui/material/Chip';
 import InsightsIcon from '@mui/icons-material/Insights';
 
-const OutlinedCard = (props) => {
+const FundCard = (props) => {
   return (
     <Paper variant="outlined" sx={{ paddingY: 2, paddingX: 2 }}>
       <React.Fragment>
@@ -54,4 +54,4 @@ const OutlinedCard = (props) => {
   );
 }
 
-export default OutlinedCard
+export default FundCard

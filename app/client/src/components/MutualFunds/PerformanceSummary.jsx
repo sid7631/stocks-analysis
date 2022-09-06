@@ -8,7 +8,7 @@ import HighchartsReact from 'highcharts-react-official'
 import Grid from '@mui/material/Unstable_Grid2';
 
 import UtilService from '../../services/util.service';
-import OutlinedCard from '../common/OutlinedCard';
+import FundCard from '../common/FundCard';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 
@@ -121,7 +121,7 @@ const PerformanceSummary = () => {
                 <Grid container spacing={2}>
                   {funds.map((item, index) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={index} >
-                      <OutlinedCard  data={item} action={cardAction}></OutlinedCard>
+                      <FundCard  data={item} action={cardAction}></FundCard>
                     </Grid>
                   ))}
 
